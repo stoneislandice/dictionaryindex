@@ -1,9 +1,9 @@
 # dictionaryindex
-This simple python script will help you index your digital dictionaries,for the first release, input the pdf of your dictionary and provide a template image of what the big initial indexes look like in your book, after running the script you will receive a pdf file with all the matches in your dictionary as well as the pages where the matches were found.
+This simple python script will help you index your digital dictionaries, for the first release, input the pdf of your dictionary and provide a template image of what the big initial indexes look like in your book, after running the script you will receive a pdf file with all the matches in your dictionary as well as the pages where the matches were found.
 ## Installation
 
         $ pip install requirements.txt
-        $ python3 dictionaryindex.py {dictionary} {index image} {difference=30} {optional: no. dilation iteration}
+        $ python3 dictionaryindex.py {dictionary} {index image} {difference=30} {no. dilation iteration=3}
         
         #### dictionary: a pdf file of the dictionary
         #### index image: a screenshot of the first index in the dictionary (see example)
