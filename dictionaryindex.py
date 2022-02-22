@@ -1,7 +1,6 @@
 import cv2 as cv
 import numpy as np
-import sys
-import time
+import sys, time, os
 from PyPDF2 import PdfFileReader, PdfFileWriter
 from pdf2image import convert_from_path
 from pdf2image.exceptions import (PDFInfoNotInstalledError,PDFPageCountError,PDFSyntaxError)
@@ -55,7 +54,7 @@ def FindMatches(pages):
             #then determine the average from all of the rows
             avg = np.average(np.average(cropped_img, axis=0),axis=0)
             #if the average (that we got from this slice of the image) corresponds to the average of our template
-            if int(avg) <= int(avg_ind)+int(sys.argv[3]):
+            if int(avg) <= int(avg_ind)+difference:
                 #add to the result array, and quit
                 pot.append([open_cv_image,(curr_sequence*maxpagecount)+k])
                 break
@@ -75,6 +74,12 @@ try:
     it = sys.argv[4] 
 except:
     it = 2
+
+try:
+    difference = sys.argv[3]
+except:
+    difference = 30
+
 
 indextemp = cv.dilate(indextemp,kernel,iterations = it)
 indextemp = resizeCvImage(indextemp)
@@ -101,7 +106,22 @@ if remainder != 0:
     FindMatches(pages)
     print("runtime:",1000*(time.time()-t),"ms")
 
-for i in pot:
-    cv.imshow("",i[0])
-    print(i[1])
-    cv.waitKey()
+os.remove("cut.pdf")
+
+images = []
+for i,j in enumerate(pot):
+    img = cv.cvtColor(j[0], cv.COLOR_BGR2RGB)
+    img = Image.fromarray(img)
+    images.append(img)
+images[0].save("out.pdf", save_all=True, append_images=images[1:])
+
+pdf_out = PdfFileWriter()
+pdf_reader = PdfFileReader(open("out.pdf", 'rb'))
+for i,k in enumerate(pot):
+    pdf_out.addPage(pdf_reader.getPage(i))
+    pdf_out.addBookmark(str(k[1]+2),i)
+
+os.remove("out.pdf")
+output_f = f'output.pdf'
+with open(output_f,'wb') as out:
+    pdf_out.write(out)
